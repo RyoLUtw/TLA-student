@@ -1,0 +1,508 @@
+<!--Beta V1.4-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Translation Learning Assistant</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <script src="diff_match_patch.js"></script>
+
+  <!--<div class="titleContainer">
+    <img class="responsive-img" src="Title.jpg">
+  </div>-->
+
+  <div class="tab">
+    <div class="tablinks-container">
+      <div class="tablinks-wrapper">
+        <button id="loadStudySet" class="tablinks" onclick="(
+          function(){
+          listLocalStorage();
+          openTab(event, 'Tab0')
+
+        })()">載入<br>先前進度</button>
+        <button id="tabButtonStep1" class="tablinks" onclick="openTab(event, 'Tab1')">步驟1<br>輸入題目</button>
+        <button id="tabButtonStep2" class="tablinks" onclick="(function(){
+          openTab(event, 'Tab2')
+          //moveBPUI('step2BPUICon','step2PopupCon');
+          loadSentence();          
+          })()">步驟2<br>找出子句</button>
+        <button id="tabButtonStep3" class="tablinks" onclick="(function(){
+          openTab(event, 'Tab3')
+          //moveBPUI('step3BPUICon','step3PopupCon');
+          loadClauseSelect();          
+          })()">步驟3<br>分解子句</button>
+        <button id="tabButtonStep4" class="tablinks" onclick="openTab(event, 'Tab4')">步驟4<br>開始翻譯</button>
+        <button id="tabButtonStep5" class="tablinks" onclick="openTab(event, 'Tab5')">步驟5<br>範例臨摹</button>
+        <button id="tabButtonStep5" class="tablinks" onclick="openTab(event, 'Tab6')">步驟6<br>儲存學習集</button>
+        <button id="tabButtonLocalStorage" class="tablinks" onclick="(function(){
+        tableLocalStorageFiles();
+        openTab(event, 'Tab7')
+        })()">管理學習集</button>
+        <!--<button id="tabButtonStep5" class="tablinks" onclick="openTab(event, 'Tab5')">步驟5<br>造句練習</button>-->
+      </div>
+    </div>
+  </div>
+  <!-- Step0 -->
+  <div id="Tab0" class="tabcontent">
+    <h3>從瀏覽器載入進度</h3>
+    <p>(請點選下拉式選單，並選擇之前保存於瀏覽器儲存空間的學習集)</p>
+    <select id="set-select" style="font-size: x-large;"></select>
+    <button class="regularButton" onclick="loadStudySetFromLocalStorage()">載入選擇的學習集</button>
+    <br>
+    <hr><br>
+    <h3>從裝置載入進度</h3>
+    <p>(請點選「瀏覽裝置」按鈕，並選擇保存於裝置的學習集)</p>
+    <button class="dominantButton" onclick="loadStudySetFromDevice(event)">瀏覽裝置</button>
+    <br>
+    <hr><br>
+    <h3>復原前次暫存</h3>
+    <p>若想繼續上次中斷之學習，請點選「復原」按鈕</p>
+    <button class="regularButton" onclick="loadPrevResultFromLocalStorage()">復原</button>
+  </div>
+  <!-- Step1 -->
+  <div id="Tab1" class="tabcontent">
+    <div>
+      <h3>從學習集讀入</h3>
+      <p>請先下載老師提供的題目檔，然後點選「讀入題目」。</p>
+      <button class="dominantButton" onclick="loadQuestionSet(event)">讀入題目</button>
+    </div>
+    <!--<div id="step1Instruction">
+      <h3>手動輸入題目</h3>
+      <p>貼上後，請點選「載入題目」。</p>
+      <hr>
+    </div>
+    <br>
+    <div id="loadTextContainer">
+      <textarea style="height: 100px; width: 100%; font-size: 12px;" id="inputText" placeholder="請貼上文章"
+        style="text-align: left; vertical-align: top;">很多人害怕公開演講 - 常在上台之前發抖、覺得頭暈。 
+只要我們對自己有信心，並持續練習，就可以克服怯場的問題。
+根據新聞報導 - 每年全球有超過百萬人在道路事故中喪失性命。
+      </textarea>
+      <div style="width:100%; display:flex; justify-content: space-between; text-align: left;">
+        <button id="loadTextButton" class="dominantButton" onclick="loadText()">載入題目</button>
+
+
+        <button class="regularButton" onclick="clearText()">清空輸入內容</button>
+
+      </div>
+    </div>
+    <div id="apiKeyContainer" class="hiddenDiv">
+      <div>
+        <input value=""
+          style="height: 30px; width: 100%; font-size: large;" type="text" id="APIkey" placeholder="請輸入API金鑰">
+      </div>
+      <div class="hiddenDiv" id="correctingMessage">
+        <p>正在將句子拆解為詞彙...請稍後</p>
+      </div>
+      <div>
+        <button id="correctArticleButton" onclick="tab1ToTab2()" class="regularButton">撰寫解答</button>
+      </div>
+    </div>
+    <br>
+    <hr>
+    <div class="hiddenDiv" id="processedDisplay">
+      <h2>載入結果:</h2>
+      <div id="processedTextContainer"></div>
+    </div>-->
+
+
+  </div>
+
+  <!-- Step2 -->
+  <div id="Tab2" class="tabcontent">
+    <h3>找出主要子句</h3>
+    <p>如同電影、漫畫中的「事件」可能由多個「分鏡畫面」所組成，一個「句子」也可能由多個「子句」組成。 </p>
+    <p>在撰寫較複雜的長句時，我們通常會將描述事件的句子拆解成較簡單的子句，分別寫出翻譯後，再重新組合。</p>
+    <p style="font-weight: bold;">千萬不能由句子的左邊依序翻譯到右邊，因為中英文的結構是不同的。</p>
+    <p>試著找出每個句子(事件)中的各個子句(分鏡畫面)吧!</p>
+    <!--<hr>
+    <div id="step2BPUICon" style="display: none;">
+      <div id="breakPhraseUI" class="ver-wrapper">
+        <div id="brkPhrsOverlay" class="blockClick"></div>
+        <div style="font-weight: bold;">編輯詞彙</div>
+        <div class="hor-wrapper">
+          <div id="step2BrkPhrCon" class="container phraseEditcontainer">
+            <p id="brkPhrLabel">分解詞彙</p>
+          </div>
+          <div id="step2BrkPhrResultCon" class="container"></div>
+        </div>
+        <div class="hor-wrapper">
+          <div id="mergePhrCon" class="container phraseEditcontainer"
+            style="width: 100%; margin-top: 0px; margin-right: 10px;">
+            <p id="mergePhrLabel">合併詞彙</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="step2PopupCon">-->
+    <hr>
+    <p>請在子句與子句之間加入空格，並刪除連接詞。</p>
+    <select id="senSelect" onchange="loadSentence()" style="font-size: x-large;"></select>
+    <div style="width:100%; display:flex; flex-direction: row; text-align:left;">
+      <p style="margin-right: 5px; font-weight: bold; white-space: nowrap;">原句:</p>
+      <p id="oriSentence"></p>
+    </div>
+    <textarea id="breakSenTextarea" style="width: 100%;" oninput="displayClause()">子句1子句2子句3</textarea>
+    <!--<p>拆解結果預覽</p>
+        <div id="breakResultPreview" class="container"></div>
+        <button onclick=breakPhrase()>確認編輯</button>
+        <button onclick=cancelBreakPhrase()>取消編輯</button>-->
+    <div class="ver-wrapper">
+
+      <!--<option value="sen0">a</option>
+      <option value="sen1">b</option>-->
+
+      <!--<div class="hor-wrapper">
+        <div class="clauseLabel">拆解後詞彙</div>
+        <div id="senContainer" class="clauseContainer" style="width:100%; border: 2px solid; height:100px"></div>
+      </div>-->
+
+    </div>
+    <div style="display: flex; flex-direction: row; justify-content: center;">
+      <button onclick="resetSentence()" class="regularButton">恢復預設</button>
+      <button onclick="checkStep2Answer()" class="dominantButton">批改</button>
+    </div>
+    <div class="hor-wrapper">
+      <div style="margin: 10px; ">
+        <p id="clauseNumMessage" style="display: none;text-align: left; color: red">
+          子句數量錯誤子句數量錯誤子句數量錯誤子句數量錯誤子句數量錯誤子句數量錯誤子句數量錯誤子句數量錯誤子子</p>
+      </div>
+      <div id="step2ResultButtonContainer" style="display: none; margin: 10px; min-width: fit-content">
+        <button id="step2To3Button" class="dominantButton" style="display: none;" onclick="goToStep3()">下一步</button>
+        <button id="showStep2AnswerButton" class="dominantButton" style="display: none;"
+          onclick="showStep2Answer()">顯示解答</button>
+        <button id="retryStep2Button" class="dominantButton" style="display: none;"
+          onclick="resetSentence()">再次嘗試</button>
+      </div>
+    </div>
+
+    <div id="clauseConWrapper" class="ver-wrapper">
+    </div>
+
+  </div>
+
+
+
+  <!-- Step3 -->
+  <div id="Tab3" class="tabcontent">
+    <h3>根據英文的結構分解子句</h3>
+    <p>要寫出正確的子句，我們必須按照英文的結構，將子句中的元素填入正確的位置，確保語意正確。</p>
+
+    <p>以下是中、英文子句的結構的對照:</p>
+    <div style="display:inline-flex;">
+      <p style="background-color:rgb(0, 205, 0); color:black">年輕的</p>&nbsp
+      <p style="background-color:green; color:beige"" >小孩</p>&nbsp
+    <p style=" background-color:rgb(247, 150, 4); color:black"">經常</p>&nbsp
+      <p style="background-color:rgb(255, 142, 255); color:black"">在教室裡</p>&nbsp
+    <p style=" background-color:rgb(254, 3, 3); color:beige"">玩</p>&nbsp
+      <p style="background-color:rgb(1, 102, 253); color:beige"">有趣的</p>&nbsp
+    <p style=" background-color:blue; color:beige"">遊戲</p>
+    </div>
+    <div style="display:inline-flex">
+      <p style="background-color:rgb(0, 205, 0);; color:black">Young</p>&nbsp
+      <p style="background-color:green; color:beige"" >kids</p>&nbsp
+    <p style=" background-color:rgb(247, 150, 4); color:black"">often</p>&nbsp
+      <p style="background-color:rgb(254, 3, 3); color:beige"">play</p>&nbsp
+    <p style=" background-color:rgb(1, 102, 253); color:beige"">fun</p>&nbsp
+      <p style="background-color:blue; color:beige"">games</p>&nbsp
+    <p style=" background-color:rgb(255, 142, 255); color:black"">in the classroom</p>&nbsp
+    </div>
+    <div style="display:inline-flex">
+      <p style="background-color:rgb(0, 205, 0);; color:black">主詞修飾詞</p>&nbsp
+      <p style="background-color:green; color:beige"" >主詞</p>&nbsp
+    <p style=" background-color:rgb(247, 150, 4); color:black"">動詞修飾詞</p>&nbsp
+      <p style="background-color:rgb(254, 3, 3); color:beige"">動詞</p>&nbsp
+    <p style=" background-color:rgb(1, 102, 253); color:beige"">受詞修飾詞</p>&nbsp
+      <p style="background-color:blue; color:beige"">受詞</p>&nbsp
+    <p style=" background-color:rgb(255, 142, 255); color:black"">全句修飾詞</p>&nbsp
+    </div>
+
+    <!--<hr>-->
+    <div id="step3BPUICon"></div>
+    <div id="step3PopupCon"></div>
+    <hr>
+    <div class="ver-wrapper">
+      <div style="width:100%; display:flex; flex-direction: row; text-align:left;">
+        <div style="margin: 10px">句子:</div>
+        <select id="Tab3SenSelect" onchange="loadClauseSelect()" style="margin: 10px">
+        </select>
+      </div>
+      <div style="width:100%; display:flex; flex-direction: row; text-align:left;">
+        <div style="margin: 10px">子句:</div>
+        <select id="clauseSelect" onchange="loadClause()" style="margin: 10px"></select>
+      </div>
+      <br>
+      <textarea id="breakClauseTextarea" style="width: 100%;" oninput="displayPOS()">主詞動詞受詞</textarea>
+      <div style="width:100%; display:flex; flex-direction: row; text-align:left;">
+        <div class="clauseLabel">拆解後詞彙</div>
+        <div id="clause" class="container" style="width:100%; height:100px;"></div>
+      </div>
+    </div>
+    <div id="dropAreas">
+      <div class="hor-wrapper">
+        <div class="ver-wrapper">
+          <div class="title">主詞修飾詞</div>
+          <div id="subjMod" class="container"></div>
+        </div>
+        <div class="ver-wrapper">
+          <div class="title">主詞</div>
+          <div id="subj" class="container"></div>
+        </div>
+      </div>
+      <div class="hor-wrapper">
+        <div class="ver-wrapper">
+          <div class="title">動詞修飾詞</div>
+          <div id="verbMod" class="container"></div>
+        </div>
+        <div class="ver-wrapper">
+          <div class="title">動詞</div>
+          <div id="verb" class="container"></div>
+        </div>
+      </div>
+      <div class="hor-wrapper">
+        <div class="ver-wrapper">
+          <div class="title">受詞修飾詞</div>
+          <div id="objMod" class="container"></div>
+        </div>
+        <div class="ver-wrapper">
+          <div class="title">受詞</div>
+          <div id="obj" class="container"></div>
+        </div>
+      </div>
+      <div class="hor-wrapper">
+        <div class="ver-wrapper">
+          <div class="title">全句修飾詞</div>
+          <div id="senMod" class="container"></div>
+        </div>
+        <div class="ver-wrapper">
+          <button id="step3chkAnsButton" class="dominantButton" onclick="checkStep3Answer()">批改</button>
+          <button id="nextClauseButton" class="dominantButton" onclick="nextClause()"
+            style="display: none">下個子句</button>
+          <button class="regularButton" onclick="resetClause()">恢復預設</button>
+        </div>
+      </div>
+    </div>
+    <div id="dropPopup" class="popup">
+      <button class="cancelButton" onclick="cancelMovingPOS()" style="float:right">X</button>
+      <p>請點選這個詞彙的角色</p>
+      <div class="hor-wrapper">
+        <button class="dropPopupButton" onclick="moveToPOSContainer('subjMod')">主詞修飾詞</button>
+        <button class="dropPopupButton" onclick="moveToPOSContainer('subj')">主詞</button>
+      </div>
+      <div class="hor-wrapper">
+        <button class="dropPopupButton" onclick="moveToPOSContainer('verbMod')">動詞修飾詞</button>
+        <button class="dropPopupButton" onclick="moveToPOSContainer('verb')">動詞</button>
+      </div>
+      <div class="hor-wrapper">
+        <button class="dropPopupButton" onclick="moveToPOSContainer('objMod')">受詞修飾詞</button>
+        <button class="dropPopupButton" onclick="moveToPOSContainer('obj')">受詞</button>
+      </div>
+      <div class="hor-wrapper">
+        <button class="dropPopupButton" onclick="moveToPOSContainer('senMod')">全句修飾詞</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Step4 -->
+  <div id="Tab4" class="tabcontent">
+    <div style="width: 100%;">
+      <h3>按部就班</h3>
+      <p>我們按照以下步驟進行翻譯，這個方法能確保句子的結構是正確的。</p>
+      <p>1. 寫出主結構: 主詞 + 動詞 (+ 受詞)</p>
+      <p>2. 填入修飾詞: 將修飾主詞、動詞、受詞、全句的修飾詞填入
+      </p>
+      <p>3. 在子句與子句間加入適當的標籤來標示子句間的關聯性。
+      </p>
+      <hr>
+    </div>
+    <div class="hor-wrapper" style="margin:5px">
+      <div style="margin-right: 10px;">請選擇要翻譯的句子:</div>
+      <div>
+        <select id="Tab4SenSelect" onchange="loadPOS()"></select>
+      </div>
+    </div>
+    <button class="dominantButton" onclick="loadPOS()">開始練習</button>
+    <hr>
+    <div id="step4-1">
+      <h3>1. 寫出主結構</h3>
+      <p>先寫出子句的主結構，確保子句有基本的組成元素(主詞+動詞)。</p>
+      <hr>
+      <div class="ver-wrapper">
+        <table id="mainStructureTable" style="width: 100%; text-align: center;">
+          <thead>
+            <th>子句</th>
+            <th>主詞</th>
+            <th>動詞</th>
+            <th>受詞</th>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <div id="Step4_1TextAreaContainer" class="ver-wrapper">
+        </div>
+      </div>
+    </div>
+    <div id="step4-2">
+      <h3>2. 填入修飾詞</h3>
+      <p>將修飾主詞、動詞、受詞、全句的修飾詞填入正確的位置。</p>
+      <hr>
+      <div class="ver-wrapper">
+        <table id="modifierTable" style="width: 100%; text-align: center;">
+          <thead>
+            <th>子句</th>
+            <th>主詞修飾詞</th>
+            <th>動詞修飾詞</th>
+            <th>受詞修飾詞</th>
+            <th>全句修飾詞</th>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <div id="Step4_2TextAreaContainer" class="ver-wrapper">
+        </div>
+      </div>
+    </div>
+    <div id="step4-3">
+      <h3>3. 合併子句</h3>
+      <p>將你寫出的子句合併，每個子句間必須加上連接詞/關係代名詞以明確標示子句間的關聯性。</p>
+      <hr>
+      <div style="width:100%; display:flex; flex-direction: row; text-align:left;">
+        <p style="margin-right: 5px; font-weight: bold; white-space: nowrap;">原句:</p>
+        <p id="step4oriSentence"></p>
+
+      </div>
+      <textarea id="combinedSentence"
+        style="width: 100%; height: 100px; font-size: large;">Since its operation in 2007, the High Speed Rail has become one of the most convenient and fastest transportation options in Taiwan.</textarea>
+      <div class="hor-wrapper">
+        <input value="" style="width: 100%; font-size: large; margin: 10px;" placeholder="請輸入API金鑰" id="APIkey"></input>
+        <button style="white-space: nowrap;" class="dominantButton" onclick="checkTranslation()">批改</button>
+      </div>
+      <p id="step4CheckingMessage" style="display: none;">批改中...</p>
+      <div id="transCheckResultContainer">
+        <h4>批改結果</h4>
+        <p id="transCheckResult"></p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Step5 -->
+  <div id="Tab5" class="tabcontent">
+    <h3>內化新學習到的用語</h3>
+    <p>再次閱讀修改完的句子，並標記出你想要學習的單字/用法，最後試著使用新學到的用語，再重新翻譯一次句子，加強印象。</p>
+    <hr>
+
+    <button id="startReadingButton" class="dominantButton" onclick="genExampleTrans()">開始閱讀</button>
+    <div id="exSenContainer" class="hiddenDiv">
+    </div>
+    <div id="practiceSettingsContainer" class="hiddenDiv"
+      style="border: 1px solid black; padding: 10px; border-radius: 5px; margin: 10px">
+      <div style="text-align: center;">
+        <h3 style="margin-top:0px; margin-bottom: 5px;">練習設定</h3>
+      </div>
+
+      <label name="hintType">提示類型:</label>
+      <label>
+        <input type="radio" name="hintType" value="normal" checked>
+        完整提示
+      </label>
+
+      <label>
+        <input type="radio" name="hintType" value="blanked">
+        模糊提示
+      </label>
+
+      <label>
+        <input type="radio" name="hintType" value="none">
+        無提示
+      </label>
+
+      <br><label name="inputContent">練習方式:</label>
+      <label>
+        <input type="radio" name="inputContent" value="2" checked>
+        填空練習
+      </label>
+      <label>
+        <input type="radio" name="inputContent" value="1">
+        從原始句子修改
+      </label>
+
+      <label>
+        <input type="radio" name="inputContent" value="0">
+        整句重寫
+      </label>
+      <div class="button-container-right">
+        <button class="dominantButton" onclick="startRewrite()">開始練習</button>
+      </div>
+
+    </div>
+    <div id="practiceContainer" class="hiddenDiv">
+      <div id="clonedDivCon"></div>
+    </div>
+    <div id="practiceButtonContainers" class="hiddenDiv">
+
+      <div id="blankButtonContainer" class="hiddenDiv">
+        <button class="regularButton" id="returnButtonBlank" onclick="showPracticeOptions()">返回</button>
+        <button id="checkBlankedExPassage" class="dominantButton" onclick="checkBlanks()">批改</button>
+      </div>
+
+      <div id="rewriteButtonContainer" class="hiddenDiv">
+        <button class="regularButton" id="returnButtonRewrite" onclick="showPracticeOptions()">返回</button>
+        <button class="regularButton" id="compareButton" onclick="compareToExSen()">與例句比較</button>
+      </div>
+
+      <div id="compareResultContainer" class="hiddenDiv">
+        <h3>比較結果:</h3>
+        <p id="compareResult" style="font-size: larger;"></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="script.js"></script>
+
+
+  <!-- Step6 -->
+  <div id="Tab6" class="tabcontent">
+    <h3>儲存學習集</h3>
+    <p>將本次的例句、定義、中文翻譯儲存到您的裝置，以便日後進行複習。</p>
+    <hr>
+    <div class="grid-container">
+      <div class="grid-item" style="grid-column: 1; grid-row: 1; text-align: left;">
+        <label for="fileName" style="font-weight: bold; font-size: x-large;">學習集名稱:</label><br>
+        <input name="fileName" id="fileName" style="width:100%; font-size: x-large;"></input>
+      </div>
+
+      <div class="grid-item" style="grid-column: 2; grid-row: 1; text-align: right;">
+        <button id="saveStudySet" class="regularButton" style="display: inline-block; margin: 10px; width:100%;"
+          onclick="saveStudySetToLocalStorage()">儲存至瀏覽器</button>
+        <br><button id="saveStudySet" class="dominantButton" style="display: inline-block; margin: 10px; width:100%;"
+          onclick="saveStudySetToDevice()">儲存至裝置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- localStorage Manager -->
+  <div id="Tab7" class="tabcontent">
+    <h1>學習集管理員</h1>
+
+    <h2>瀏覽器內的學習集</h2>
+    <table id="fileTable">
+      <tr>
+        <th>選取</th>
+        <th>學習集名稱</th>
+      </tr>
+    </table>
+
+    <button class="regularButton" onclick="deleteSelectedFiles()">刪除選取的學習集</button>
+  </div>
+  </div>
+</body>
+
+</html>
